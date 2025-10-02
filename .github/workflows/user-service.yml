@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:  # 👈 lets you manually trigger workflow
 
 jobs:
   build-and-push:
@@ -14,7 +15,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v3
 
-      # Optional: Cache Maven deps to speed up builds
+      # Cache Maven deps to speed up builds
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -29,10 +30,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Build Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/user-service:latest .
+      - name: Build JAR
+        run: mvn clean package -DskipTests
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
@@ -41,7 +40,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # Build Docker image with secrets as build args
+      - name: Build Docker image
+        run: |
+          docker build \
+            --build-arg JDBC_DATABASE_URL=${{ secrets.JDBC_DATABASE_URL }} \
+            --build-arg JDBC_DATABASE_USERNAME=${{ secrets.JDBC_DATABASE_USERNAME }} \
+            --build-arg JDBC_DATABASE_PASSWORD=${{ secrets.JDBC_DATABASE_PASSWORD }} \
+            --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            -t ${{ secrets.DOCKER_USERNAME }}/user-service:latest .
+
       # Push image
       - name: Push Docker image
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
