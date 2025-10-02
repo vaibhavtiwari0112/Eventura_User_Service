@@ -42,16 +42,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: |
-          docker buildx build \
-            --build-arg JDBC_DATABASE_URL=${{ secrets.JDBC_DATABASE_URL }} \
-            --build-arg JDBC_DATABASE_USERNAME=${{ secrets.JDBC_DATABASE_USERNAME }} \
-            --build-arg JDBC_DATABASE_PASSWORD=${{ secrets.JDBC_DATABASE_PASSWORD }} \
-            --build-arg EVENTURA_SECURITY_JWT_SECRET=${{ secrets.JWT_SECRET }} \
-            --build-arg EVENTURA_SECURITY_JWT_ISSUER=${{ secrets.JWT_ISSUER }} \
-            --build-arg EVENTURA_SECURITY_JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }} \
-            -t ${{ secrets.DOCKER_USERNAME }}/user-service:latest \
-            --load . 
+        run: docker buildx build --build-arg JDBC_DATABASE_URL=${{ secrets.JDBC_DATABASE_URL }} --build-arg JDBC_DATABASE_USERNAME=${{ secrets.JDBC_DATABASE_USERNAME }} --build-arg JDBC_DATABASE_PASSWORD=${{ secrets.JDBC_DATABASE_PASSWORD }} --build-arg EVENTURA_SECURITY_JWT_SECRET=${{ secrets.JWT_SECRET }} --build-arg EVENTURA_SECURITY_JWT_ISSUER=${{ secrets.JWT_ISSUER }} --build-arg EVENTURA_SECURITY_JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }} -t ${{ secrets.DOCKER_USERNAME }}/user-service:latest --load .
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
