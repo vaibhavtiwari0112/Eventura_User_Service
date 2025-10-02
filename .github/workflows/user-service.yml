@@ -40,15 +40,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build Docker image with secrets as build args
+          # Build Docker image with secrets as build args
       - name: Build Docker image
-        run: >
-          docker build
-          --build-arg JDBC_DATABASE_URL=${{ secrets.JDBC_DATABASE_URL }}
-          --build-arg JDBC_DATABASE_USERNAME=${{ secrets.JDBC_DATABASE_USERNAME }}
-          --build-arg JDBC_DATABASE_PASSWORD=${{ secrets.JDBC_DATABASE_PASSWORD }}
-          --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }}
-          -t ${{ secrets.DOCKER_USERNAME }}/user-service:latest .
+        run: docker build --build-arg JDBC_DATABASE_URL=${{ secrets.JDBC_DATABASE_URL }} --build-arg JDBC_DATABASE_USERNAME=${{ secrets.JDBC_DATABASE_USERNAME }} --build-arg JDBC_DATABASE_PASSWORD=${{ secrets.JDBC_DATABASE_PASSWORD }} --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} -t ${{ secrets.DOCKER_USERNAME }}/user-service:latest .
 
       # Push image
       - name: Push Docker image
